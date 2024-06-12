@@ -1,0 +1,80 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Leaderboard {
+  createdAt         DateTime @default(now())
+  id                String   @id @default(cuid())
+  leaderboardPlayer String?
+  leaderboardRank   Int?
+  leaderboardRating Int?
+  updatedAt         DateTime @updatedAt
+}
+
+model Game {
+  createdAt       DateTime            @default(now())
+  gamePlayedAt    DateTime?
+  gamePlayer1     String?
+  gamePlayer2     String?
+  gameResult      EnumGameGameResult?
+  id              String              @id @default(cuid())
+  playedAt        DateTime?
+  player1         String?
+  player2         String?
+  result          EnumGameResult?
+  tournamentGames TournamentGame[]
+  updatedAt       DateTime            @updatedAt
+}
+
+model Player {
+  createdAt         DateTime           @default(now())
+  id                String             @id @default(cuid())
+  name              String?
+  rating            Int?
+  tournamentPlayers TournamentPlayer[]
+  updatedAt         DateTime           @updatedAt
+}
+
+model TournamentGame {
+  createdAt    DateTime    @default(now())
+  game         Game?       @relation(fields: [gameId], references: [id])
+  gameId       String?
+  id           String      @id @default(cuid())
+  tournament   Tournament? @relation(fields: [tournamentId], references: [id])
+  tournamentId String?
+  updatedAt    DateTime    @updatedAt
+}
+
+model Tournament {
+  createdAt           DateTime           @default(now())
+  id                  String             @id @default(cuid())
+  tournamentEndDate   DateTime?
+  tournamentGames     TournamentGame[]
+  tournamentName      String?
+  tournamentPlayers   TournamentPlayer[]
+  tournamentStartDate DateTime?
+  updatedAt           DateTime           @updatedAt
+}
+
+model TournamentPlayer {
+  createdAt    DateTime    @default(now())
+  id           String      @id @default(cuid())
+  player       Player?     @relation(fields: [playerId], references: [id])
+  playerId     String?
+  tournament   Tournament? @relation(fields: [tournamentId], references: [id])
+  tournamentId String?
+  updatedAt    DateTime    @updatedAt
+}
+
+enum EnumGameGameResult {
+  Option1
+}
+
+enum EnumGameResult {
+  Option1
+}
